@@ -88,6 +88,41 @@ def _get_publication_dt(book: Any, series_asin: Optional[str] = None, series_cac
     return None
 
 
+def _collect_book_authors(book: Any) -> set[str]:
+    authors = set()
+
+    def _add_author(value):
+        if not value:
+            return
+        if isinstance(value, list):
+            for item in value:
+                _add_author(item)
+            return
+        if isinstance(value, dict):
+            for key in ("name", "full_name", "display_name", "author", "title"):
+                if value.get(key):
+                    _add_author(value.get(key))
+                    return
+            return
+        for author in str(value).split(","):
+            author = author.strip()
+            if author:
+                authors.add(author)
+
+    for key in ("authors", "author"):
+        if isinstance(book, dict):
+            _add_author(book.get(key))
+        else:
+            _add_author(getattr(book, key, None))
+
+    raw = book.get("raw") if isinstance(book, dict) else getattr(book, "raw", None)
+    if isinstance(raw, dict):
+        for key in ("authors", "author", "contributors"):
+            _add_author(raw.get(key))
+
+    return authors
+
+
 def render_frontpage_for_slug(request: Request, slug: str, templates: Jinja2Templates):
     if not slug:
         return None
@@ -187,6 +222,7 @@ def render_frontpage_for_slug(request: Request, slug: str, templates: Jinja2Temp
                     "url": book_url,
                 })
         narr_set = set()
+        author_set = set()
         runtime_mins = 0
         for book in visible:
             if getattr(book, "narrators", None):
@@ -194,6 +230,7 @@ def render_frontpage_for_slug(request: Request, slug: str, templates: Jinja2Temp
                     n = n.strip()
                     if n:
                         narr_set.add(n)
+            author_set.update(_collect_book_authors(book))
             try:
                 runtime_mins += int(getattr(book, "runtime", None) or 0)
             except Exception:
@@ -218,6 +255,7 @@ def render_frontpage_for_slug(request: Request, slug: str, templates: Jinja2Temp
         series_rows.append({
             "title": series_item.title,
             "asin": series_item.asin,
+            "authors": ", ".join(sorted(author_set)),
             "narrators": ", ".join(sorted(narr_set)),
             "book_count": len(visible),
             "runtime": runtime_str,
