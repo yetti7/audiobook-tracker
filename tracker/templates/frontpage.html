@@ -98,7 +98,7 @@
               <tr>
                 <th scope="col" style="width:1%; white-space:nowrap;">Cover</th>
                 <th scope="col" data-sort-key="series" class="sortable-col" style="width:auto; white-space:nowrap;">Series</th>
-                <th scope="col" class="d-none d-md-table-cell authors-head" style="min-width: 180px;">Authors</th>
+                <th scope="col" data-sort-key="authors" class="sortable-col d-none d-md-table-cell authors-head" style="min-width: 180px;">Authors</th>
                 <th scope="col" class="d-none d-md-table-cell narrators-head" style="min-width: 280px;">Narrators</th>
                 <th scope="col" data-sort-key="books" class="sortable-col text-end" style="min-width: 50px;">Books</th>
                 <th scope="col" data-sort-key="lastRelease" class="sortable-col d-none d-md-table-cell text-end" style="min-width: 110px;">Last release</th>
@@ -108,7 +108,7 @@
             </thead>
             <tbody>
               {% for s in series %}
-              <tr data-series="{{ s.title or '' }}" data-books="{{ s.book_count or 0 }}" data-last-release="{{ s.last_release_ts or '' }}" data-next-release="{{ s.next_release_ts or '' }}" data-duration="{{ s.duration_minutes or 0 }}">
+              <tr data-series="{{ s.title or '' }}" data-authors="{{ s.authors or '' }}" data-books="{{ s.book_count or 0 }}" data-last-release="{{ s.last_release_ts or '' }}" data-next-release="{{ s.next_release_ts or '' }}" data-duration="{{ s.duration_minutes or 0 }}">
                 <td class="text-start series-cover-cell">
                   {% if s.cover %}
                   <img src="{{ s.cover }}" alt="Cover" style="height:40px;width:auto;border:none;outline:none;" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" data-bs-custom-class="cover-tooltip" title='<img src="{{ s.cover }}" style="width:180px;height:auto;" />' />
@@ -147,6 +147,7 @@
     if (!headers.length) return;
     const valueGetters = {
       series: row => (row.dataset.series || '').toString().toLowerCase(),
+      authors: row => (row.dataset.authors || '').toString().toLowerCase(),
       books: row => Number(row.dataset.books) || 0,
       duration: row => Number(row.dataset.duration) || 0,
       lastRelease: row => {
