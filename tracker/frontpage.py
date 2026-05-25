@@ -222,6 +222,7 @@ def render_frontpage_for_slug(request: Request, slug: str, templates: Jinja2Temp
                 upcoming_cards.append({
                     "title": getattr(book, "title", None) or series_item.title,
                     "series": series_item.title,
+                    "authors": ", ".join(sorted(_collect_book_authors(book))),
                     "narrators": getattr(book, "narrators", None) or "",
                     "runtime": getattr(book, "runtime", None) or "",
                     "runtime_str": runtime_str,
@@ -240,6 +241,7 @@ def render_frontpage_for_slug(request: Request, slug: str, templates: Jinja2Temp
                 latest_cards.append({
                     "title": getattr(book, "title", None) or series_item.title,
                     "series": series_item.title,
+                    "authors": ", ".join(sorted(_collect_book_authors(book))),
                     "narrators": getattr(book, "narrators", None) or "",
                     "runtime": getattr(book, "runtime", None) or "",
                     "runtime_str": runtime_str,

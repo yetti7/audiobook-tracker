@@ -17,7 +17,7 @@
       <h3 class="mb-3 text-center text-md-center text-start">Upcoming Releases</h3>
       {% if upcoming and upcoming|length > 0 %}
         <div class="upcoming-scroll">
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 {% if upcoming|length < 4 %}justify-content-center{% endif %}">
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3 {% if upcoming|length < 4 %}justify-content-center{% endif %}">
         {% for b in upcoming %}
         <div class="col">
           <div class="card h-100" data-release-utc="{{ b.release_dt_iso }}">
@@ -28,6 +28,9 @@
             <div class="card-body">
               <h5 class="card-title">{% if b.narrator_warning and show_narrator_warnings %}<i class="bi bi-mic text-warning me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Different narrator than the first book in the series"></i>{% endif %}{{ b.title }}</h5>
               <div class="card-subtitle text-muted">{{ b.series }}</div>
+              {% if b.authors %}
+              <div class="mt-2"><strong>Author:</strong> {{ b.authors }}</div>
+              {% endif %}
             <div class="mt-2"><strong>Release:</strong> {{ b.release_str }}</div>
               {% if b.narrators %}
               <div class="mt-2"><strong>Narrators:</strong> {{ b.narrators }}</div>
@@ -57,7 +60,7 @@
       <h3 class="mb-3 text-center text-md-center text-start">Latest Releases</h3>
       {% if latest and latest|length > 0 %}
         <div class="latest-scroll">
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 {% if latest|length < 4 %}justify-content-center{% endif %}">
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3 {% if latest|length < 4 %}justify-content-center{% endif %}">
         {% for b in latest %}
         <div class="col">
           <div class="card h-100" data-release-utc="{{ b.release_dt_iso }}">
@@ -68,6 +71,9 @@
             <div class="card-body">
               <h5 class="card-title">{% if b.narrator_warning and show_narrator_warnings %}<i class="bi bi-mic text-warning me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Different narrator than the first book in the series"></i>{% endif %}{{ b.title }}</h5>
               <div class="card-subtitle text-muted">{{ b.series }}</div>
+              {% if b.authors %}
+              <div class="mt-2"><strong>Author:</strong> {{ b.authors }}</div>
+              {% endif %}
               <div class="card-subtitle text-muted">Released: {{ b.release_str }}</div>
               {% if b.runtime_str %}
               <div class="mt-1"><strong>Runtime:</strong> {{ b.runtime_str }}</div>
