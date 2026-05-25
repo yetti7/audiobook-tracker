@@ -99,7 +99,7 @@ def _collect_book_authors(book: Any) -> set[str]:
                 _add_author(item)
             return
         if isinstance(value, dict):
-            for key in ("name", "full_name", "display_name", "author", "title"):
+            for key in ("name", "full_name", "display_name", "author", "authors", "title"):
                 if value.get(key):
                     _add_author(value.get(key))
                     return
@@ -109,13 +109,42 @@ def _collect_book_authors(book: Any) -> set[str]:
             if author:
                 authors.add(author)
 
-    for key in ("authors", "author"):
-        if isinstance(book, dict):
-            _add_author(book.get(key))
-        else:
-            _add_author(getattr(book, key, None))
+    def _get_value(obj, key):
+        if isinstance(obj, dict):
+            return obj.get(key)
+        return getattr(obj, key, None)
 
-    raw = book.get("raw") if isinstance(book, dict) else getattr(book, "raw", None)
+    def _as_dict(obj):
+        if isinstance(obj, dict):
+            return obj
+        for method_name in ("model_dump", "dict"):
+            method = getattr(obj, method_name, None)
+            if callable(method):
+                try:
+                    dumped = method()
+                    if isinstance(dumped, dict):
+                        return dumped
+                except Exception:
+                    pass
+        return None
+
+    # Direct fields on the parsed book object.
+    for key in ("authors", "author"):
+        _add_author(_get_value(book, key))
+
+    # Pydantic/dataclass-style serialized fields.
+    book_dict = _as_dict(book)
+    if isinstance(book_dict, dict):
+        for key in ("authors", "author"):
+            _add_author(book_dict.get(key))
+
+        raw_from_dump = book_dict.get("raw")
+        if isinstance(raw_from_dump, dict):
+            for key in ("authors", "author", "contributors"):
+                _add_author(raw_from_dump.get(key))
+
+    # Raw Audible payload when available directly.
+    raw = _get_value(book, "raw")
     if isinstance(raw, dict):
         for key in ("authors", "author", "contributors"):
             _add_author(raw.get(key))
