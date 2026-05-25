@@ -12,6 +12,36 @@
   gtag('config', '{{ settings.google_analytics_id }}');
 </script>
 {% endif %}
+<style>
+  @media (min-width: 992px) {
+    .upcoming-scroll .row,
+    .latest-scroll .row {
+      flex-wrap: nowrap;
+    }
+
+    .upcoming-scroll .col,
+    .latest-scroll .col {
+      flex: 0 0 220px;
+      max-width: 220px;
+    }
+
+    .upcoming-scroll .card-img-top,
+    .latest-scroll .card-img-top {
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .upcoming-scroll .card-title,
+    .latest-scroll .card-title {
+      font-size: 0.95rem;
+    }
+
+    .upcoming-scroll .card-body,
+    .latest-scroll .card-body {
+      font-size: 0.85rem;
+    }
+  }
+</style>
   <div class="row mb-4">
     <div class="col">
       <h3 class="mb-3 text-center text-md-center text-start">Upcoming Releases</h3>
