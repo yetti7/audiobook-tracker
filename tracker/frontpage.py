@@ -281,10 +281,12 @@ def render_frontpage_for_slug(request: Request, slug: str, templates: Jinja2Temp
         last_release_ts = series_last_release.isoformat() if series_last_release else None
         next_release_str = format_d(series_next_release, date_format)
         next_release_ts = series_next_release.isoformat() if series_next_release else None
+        author_names = sorted(author_set)
         series_rows.append({
             "title": series_item.title,
             "asin": series_item.asin,
-            "authors": ", ".join(sorted(author_set)),
+            "author_names": author_names,
+            "authors": ", ".join(author_names),
             "narrators": ", ".join(sorted(narr_set)),
             "book_count": len(visible),
             "runtime": runtime_str,

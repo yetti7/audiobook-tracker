@@ -98,7 +98,7 @@
               <tr>
                 <th scope="col" style="width:1%; white-space:nowrap;">Cover</th>
                 <th scope="col" data-sort-key="series" class="sortable-col" style="width:auto; white-space:nowrap;">Series</th>
-                <th scope="col" data-sort-key="authors" class="sortable-col d-none d-md-table-cell authors-head" style="min-width: 180px;">Authors</th>
+                <th scope="col" data-sort-key="authors" class="sortable-col d-none d-md-table-cell authors-head" style="min-width: 280px; max-width: 280px; width: 280px;">Authors</th>
                 <th scope="col" class="d-none d-md-table-cell narrators-head" style="min-width: 280px;">Narrators</th>
                 <th scope="col" data-sort-key="books" class="sortable-col text-end" style="min-width: 50px;">Books</th>
                 <th scope="col" data-sort-key="lastRelease" class="sortable-col d-none d-md-table-cell text-end" style="min-width: 110px;">Last release</th>
@@ -123,7 +123,15 @@
                   <span class="series-link d-inline-block" title="{{ s.title }}">{{ s.title }}</span>
                   {% endif %}
                 </td>
-                  <td class="authors-col d-none d-md-table-cell" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ s.authors }}">{{ s.authors or "—" }}</td>
+                  <td class="authors-col d-none d-md-table-cell" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 280px; width: 280px;" title="{{ s.authors }}">
+                    {% if s.author_names %}
+                      {% for author in s.author_names %}
+                        <a href="https://www.audible.com/search?searchAuthor={{ author|urlencode }}" class="author-link text-decoration-none" target="_blank" rel="noopener noreferrer">{{ author }}</a>{% if not loop.last %}, {% endif %}
+                      {% endfor %}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
                   <td class="narrators-col d-none d-md-table-cell" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ s.narrators }}">{{ s.narrators or "—" }}</td>
                   <td class="books-col text-end text-muted small pe-3">{{ s.book_count }}</td>
                   <td class="last-release-col text-end text-muted small pe-3 d-none d-md-table-cell">{{ s.last_release or "—" }}</td>
