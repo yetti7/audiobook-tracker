@@ -139,9 +139,12 @@
               {% if b.authors %}
               <div class="mt-2"><strong>Author:</strong> {{ b.authors }}</div>
               {% endif %}
-              <div class="card-subtitle text-muted">Released: {{ b.release_str }}</div>
+            <div class="mt-2"><strong>Release:</strong> {{ b.release_str }}</div>
+              {% if b.narrators %}
+              <div class="mt-2"><strong>Narrators:</strong> {{ b.narrators }}</div>
+              {% endif %}
               {% if b.runtime_str %}
-              <div class="mt-1"><strong>Runtime:</strong> {{ b.runtime_str }}</div>
+              <div class="mt-2"><strong>Runtime:</strong> {{ b.runtime_str }}</div>
               {% endif %}
             </div>
             <div class="card-footer bg-transparent border-top-0">
