@@ -13,13 +13,6 @@
 </script>
 {% endif %}
 <style>
-  .upcoming-scroll .release-card,
-  .latest-scroll .release-card {
-    height: 430px;
-    display: flex;
-    flex-direction: column;
-  }
-
   .upcoming-scroll .card-img-top,
   .latest-scroll .card-img-top {
     width: 100%;
@@ -28,33 +21,16 @@
     object-fit: cover;
   }
 
-  .upcoming-scroll .card-body,
-  .latest-scroll .card-body {
-    font-size: 0.76rem;
-    padding: 0.55rem;
-    flex: 1 1 auto;
-    overflow: hidden;
-  }
+  @media (max-width: 1199.98px) {
+    .upcoming-scroll .release-card,
+    .latest-scroll .release-card {
+      height: auto;
+    }
 
-  .upcoming-scroll .card-title,
-  .latest-scroll .card-title,
-  .upcoming-scroll .card-subtitle,
-  .latest-scroll .card-subtitle,
-  .upcoming-scroll .mt-1,
-  .latest-scroll .mt-1,
-  .upcoming-scroll .mt-2,
-  .latest-scroll .mt-2 {
-    line-height: 1.15;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-  }
-
-  .upcoming-scroll .card-footer,
-  .latest-scroll .card-footer {
-    margin-top: auto;
-    padding: 0 0.55rem 0.55rem;
+    .upcoming-scroll .card-body,
+    .latest-scroll .card-body {
+      overflow: visible;
+    }
   }
 
   @media (min-width: 1200px) {
@@ -74,6 +50,52 @@
     .latest-scroll .release-card {
       width: 170px;
       max-width: 170px;
+      height: 430px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .upcoming-scroll .card-title,
+    .latest-scroll .card-title {
+      font-size: 0.82rem;
+      line-height: 1.15;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+
+    .upcoming-scroll .card-body,
+    .latest-scroll .card-body {
+      font-size: 0.76rem;
+      padding: 0.55rem;
+      flex: 1 1 auto;
+      overflow: hidden;
+    }
+
+    .upcoming-scroll .card-subtitle,
+    .latest-scroll .card-subtitle,
+    .upcoming-scroll .mt-1,
+    .latest-scroll .mt-1,
+    .upcoming-scroll .mt-2,
+    .latest-scroll .mt-2 {
+      line-height: 1.15;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+
+    .upcoming-scroll .card-footer,
+    .latest-scroll .card-footer {
+      margin-top: auto;
+      padding: 0 0.55rem 0.55rem;
+    }
+
+    .upcoming-scroll .btn,
+    .latest-scroll .btn {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.4rem;
     }
   }
 </style>
