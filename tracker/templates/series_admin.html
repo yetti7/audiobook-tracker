@@ -41,6 +41,7 @@ let currentFilter = '';
 let sortState = { key: 'title', asc: true };
 const sortableColumns = [
   { key: 'title', label: 'Title' },
+  { key: 'authors', label: 'Authors' },
   { key: 'asin', label: 'ASIN' },
   { key: 'book_count', label: 'Books' },
   { key: 'user_count', label: 'Users' },
@@ -89,6 +90,48 @@ function formatDateTime(val) {
     const time = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
     return `${date} ${time}`;
   } catch(e) { return val; }
+}
+
+function collectBookAuthors(book) {
+  const authors = new Set();
+
+  function addAuthor(value) {
+    if (!value) return;
+    if (Array.isArray(value)) {
+      value.forEach(addAuthor);
+      return;
+    }
+    if (typeof value === 'object') {
+      for (const key of ['name', 'full_name', 'display_name', 'author', 'authors', 'title']) {
+        if (value[key]) {
+          addAuthor(value[key]);
+          return;
+        }
+      }
+      return;
+    }
+    value.toString().split(',').forEach(author => {
+      const trimmed = author.trim();
+      if (trimmed) authors.add(trimmed);
+    });
+  }
+
+  addAuthor(book?.authors);
+  addAuthor(book?.author);
+  addAuthor(book?.raw?.authors);
+  addAuthor(book?.raw?.author);
+  addAuthor(book?.raw?.contributors);
+
+  return authors;
+}
+
+function collectSeriesAuthors(series) {
+  const authors = new Set();
+  const books = Array.isArray(series.books) ? series.books : [];
+  books.forEach(book => {
+    collectBookAuthors(book).forEach(author => authors.add(author));
+  });
+  return [...authors].sort();
 }
 
 function setSort(key) {
@@ -141,6 +184,7 @@ function render(list) {
   const tbody = document.createElement('tbody');
   list.forEach(s => {
     const tr = document.createElement('tr');
+    const authorNames = Array.isArray(s.authorNames) ? s.authorNames : collectSeriesAuthors(s);
     const urlCell = document.createElement('td');
     if (s.asin) {
       const coverSrc = s.cover_image || null;
@@ -166,6 +210,28 @@ function render(list) {
     urlCell.style.textOverflow = 'ellipsis';
     urlCell.style.whiteSpace = 'nowrap';
     tr.appendChild(urlCell);
+
+    const authorsCell = document.createElement('td');
+    authorsCell.style.overflow = 'hidden';
+    authorsCell.style.textOverflow = 'ellipsis';
+    authorsCell.style.whiteSpace = 'nowrap';
+    authorsCell.style.maxWidth = '260px';
+    authorsCell.title = authorNames.join(', ');
+    if (authorNames.length) {
+      authorNames.forEach((author, index) => {
+        const a = document.createElement('a');
+        a.href = `https://www.audible.com/search?searchAuthor=${encodeURIComponent(author)}`;
+        a.target = '_blank';
+        a.rel = 'noreferrer noopener';
+        a.textContent = author;
+        authorsCell.appendChild(a);
+        if (index < authorNames.length - 1) authorsCell.appendChild(document.createTextNode(', '));
+      });
+    } else {
+      authorsCell.textContent = '—';
+    }
+    tr.appendChild(authorsCell);
+
     const asin = document.createElement('td');
     if (s.asin) {
       const a = document.createElement('a');
