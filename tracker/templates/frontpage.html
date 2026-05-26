@@ -30,6 +30,9 @@
     .latest-scroll .release-card {
       width: 170px;
       max-width: 170px;
+      height: 430px;
+      display: flex;
+      flex-direction: column;
     }
 
     .upcoming-scroll .card-img-top,
@@ -44,16 +47,36 @@
     .latest-scroll .card-title {
       font-size: 0.82rem;
       line-height: 1.15;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
     }
 
     .upcoming-scroll .card-body,
     .latest-scroll .card-body {
       font-size: 0.76rem;
       padding: 0.55rem;
+      flex: 1 1 auto;
+      overflow: hidden;
+    }
+
+    .upcoming-scroll .card-subtitle,
+    .latest-scroll .card-subtitle,
+    .upcoming-scroll .mt-1,
+    .latest-scroll .mt-1,
+    .upcoming-scroll .mt-2,
+    .latest-scroll .mt-2 {
+      line-height: 1.15;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
     }
 
     .upcoming-scroll .card-footer,
     .latest-scroll .card-footer {
+      margin-top: auto;
       padding: 0 0.55rem 0.55rem;
     }
 
