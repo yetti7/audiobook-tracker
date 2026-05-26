@@ -182,6 +182,48 @@ function dateValue(val) {
   return isNaN(d.getTime()) ? null : d.getTime();
 }
 
+function collectBookAuthors(book) {
+  const authors = new Set();
+
+  function addAuthor(value) {
+    if (!value) return;
+    if (Array.isArray(value)) {
+      value.forEach(addAuthor);
+      return;
+    }
+    if (typeof value === 'object') {
+      for (const key of ['name', 'full_name', 'display_name', 'author', 'authors', 'title']) {
+        if (value[key]) {
+          addAuthor(value[key]);
+          return;
+        }
+      }
+      return;
+    }
+    value.toString().split(',').forEach(author => {
+      const trimmed = author.trim();
+      if (trimmed) authors.add(trimmed);
+    });
+  }
+
+  addAuthor(book?.authors);
+  addAuthor(book?.author);
+  addAuthor(book?.raw?.authors);
+  addAuthor(book?.raw?.author);
+  addAuthor(book?.raw?.contributors);
+
+  return authors;
+}
+
+function collectSeriesAuthors(item) {
+  const authors = new Set();
+  const books = Array.isArray(item.books) ? item.books : [];
+  books.forEach(book => {
+    collectBookAuthors(book).forEach(author => authors.add(author));
+  });
+  return [...authors].sort();
+}
+
 function compareValues(a, b, key) {
   if (key === 'bookCount') return (a.bookCount || 0) - (b.bookCount || 0);
   if (key === 'lastRelease') return (a._lastReleaseTs || 0) - (b._lastReleaseTs || 0);
@@ -220,8 +262,11 @@ async function fetchLibrary() {
   libraryItems = items.map(it => {
     const books = Array.isArray(it.books) ? it.books : [];
     const lastRelease = getLatestRelease(books);
+    const authorNames = collectSeriesAuthors(it);
     return {
       ...it,
+      authorNames,
+      authors: authorNames.join(', '),
       bookCount: books.length,
       lastRelease,
       _lastReleaseTs: dateValue(lastRelease),
@@ -245,7 +290,8 @@ function renderLibraryTable() {
 
   const searchTerm = document.getElementById('librarySearch').value.toLowerCase();
   const filteredItems = libraryItems.filter(item => 
-    item.title.toLowerCase().includes(searchTerm) || 
+    item.title.toLowerCase().includes(searchTerm) ||
+    (item.authors && item.authors.toLowerCase().includes(searchTerm)) ||
     (item.asin && item.asin.toLowerCase().includes(searchTerm))
   );
 
@@ -261,6 +307,7 @@ function renderLibraryTable() {
   const headerRow = document.createElement('tr');
   const headers = [
     { key: 'title', label: 'Title' },
+    { key: 'authors', label: 'Authors' },
     { key: 'asin', label: 'ASIN' },
     { key: 'bookCount', label: 'Books' },
     { key: 'lastRelease', label: 'Last Release' },
@@ -293,6 +340,24 @@ function renderLibraryTable() {
       tdTitle.textContent = it.title || '(untitled)';
     }
     tr.appendChild(tdTitle);
+
+    const tdAuthors = document.createElement('td');
+    tdAuthors.className = 'text-truncate';
+    tdAuthors.style.maxWidth = '260px';
+    if (Array.isArray(it.authorNames) && it.authorNames.length) {
+      it.authorNames.forEach((author, index) => {
+        const a = document.createElement('a');
+        a.href = `https://www.audible.com/search?searchAuthor=${encodeURIComponent(author)}`;
+        a.target = '_blank';
+        a.rel = 'noreferrer noopener';
+        a.textContent = author;
+        tdAuthors.appendChild(a);
+        if (index < it.authorNames.length - 1) tdAuthors.appendChild(document.createTextNode(', '));
+      });
+    } else {
+      tdAuthors.textContent = '—';
+    }
+    tr.appendChild(tdAuthors);
 
     const tdAsin = document.createElement('td');
     if (it.asin) {
